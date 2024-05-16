@@ -7,6 +7,9 @@ using MailKit.Net.Imap;
 using System.Net.Mail;
 using System.Windows.Forms;
 using System.Runtime.CompilerServices;
+using Org.BouncyCastle.Asn1.X509;
+using System.Security.Cryptography;
+using MailKit.Search;
 
 namespace EmailApp {
     public partial class Form1 : Form {
@@ -30,7 +33,7 @@ namespace EmailApp {
             textBoxFor.Enabled = false;
             textBoxSubject.Enabled = false;
 
-            var client = new ImapClient();
+            client = new ImapClient();
             try {
                 client.Connect("imap.gmail.com", 993, true);
                 client.Authenticate(userEmail, userPassword);
@@ -38,7 +41,7 @@ namespace EmailApp {
                 // The Inbox folder is always available on all IMAP servers...
 
                 mailList = client.Inbox;
-                mailList.Open(FolderAccess.ReadOnly);
+                mailList.Open(FolderAccess.ReadWrite);
                 //listBoxMail.Items.Clear();
 
                 /*
@@ -50,7 +53,7 @@ namespace EmailApp {
                 listBoxMail.Refresh();
                 */
 
-                LoadMessages();
+                LoadMessages(ref mailList);
                 Console.WriteLine(listBoxMail.Items.Count);
                 listBoxMail.Refresh();
 
@@ -91,12 +94,13 @@ namespace EmailApp {
             richTextBoxMail.ReadOnly = false;
             textBoxFor.Enabled = true;
             textBoxSubject.Enabled = true;
-            listBoxMail.Items.Clear(); // maybe it'll be better to delite this 
+            listBoxMail.Enabled = false; 
             richTextBoxMail.Text = "Здесь можно написать текст...";
             buttonWrite.Enabled = false;
             buttonSend.Enabled = true;
             buttonBack.Enabled = true;
             buttonDelete.Enabled = false;
+            buttonRefresh.Enabled = false;
             
             MailText = "";
         }
@@ -105,7 +109,7 @@ namespace EmailApp {
 
         }
 
-        private void buttonSend_Click(object sender, EventArgs e) { // TODO: Сделать отправку сообещний 
+        private void buttonSend_Click(object sender, EventArgs e) { 
 
             var message = new MimeMessage();
             message.From.Add(new MailboxAddress(userEmail, userEmail));
@@ -113,7 +117,7 @@ namespace EmailApp {
             message.Subject = textBoxSubject.Text;
 
             message.Body = new TextPart("plain") {
-                Text = MailText 
+                Text = richTextBoxMail.Text
             };
 
             using (var clientSMTP = new MailKit.Net.Smtp.SmtpClient()) {
@@ -135,11 +139,29 @@ namespace EmailApp {
                     clientSMTP?.Dispose();
                 }
             }
-            
+
+            MailText = "";
+            buttonBack.Enabled = false;
+            buttonWrite.Enabled = true;
+            buttonSend.Enabled = false;
+            textBoxFor.Text = "";
+            textBoxFor.Enabled = false;
+            textBoxSubject.Text = "";
+            textBoxSubject.Enabled = false;
+            buttonDelete.Enabled = true;
+            richTextBoxMail.Text = "";
+            richTextBoxMail.ReadOnly = true;
+            listBoxMail.Enabled = true;
+            buttonRefresh.Enabled = true;
+
         }
 
-        private void buttonDelete_Click(object sender, EventArgs e) {// TODO: Сделать удаление писем с вызовом MassageBox
+        private void buttonDelete_Click(object sender, EventArgs e) { // TODO: Сделать удаление писем с вызовом MassageBox
+            mailList.Open(FolderAccess.ReadWrite);
+            mailList.Store(listBoxMail.SelectedIndex, new StoreFlagsRequest(StoreAction.Add, MessageFlags.Deleted) { Silent = true });
+            mailList.Expunge();
 
+            LoadMessages(ref mailList);
         }
 
         private void textBoxFor_TextChanged(object sender, EventArgs e) {
@@ -151,21 +173,35 @@ namespace EmailApp {
             buttonBack.Enabled = false;
             buttonWrite.Enabled = true;
             buttonSend.Enabled = false;
+            textBoxFor.Text = "";
             textBoxFor.Enabled = false;
+            textBoxSubject.Text = "";
             textBoxSubject.Enabled = false;
             buttonDelete.Enabled = true;
             richTextBoxMail.Text = "";
-            LoadMessages();
+            richTextBoxMail.ReadOnly = true;
+            listBoxMail.Enabled = true;
+            buttonRefresh.Enabled = true;
+        }
+        
+        private void buttonRefresh_Click(object sender, EventArgs e) { // FIX ME: добавить оптимизацию для обновления (не каждый раз обнавлять) 
+ 
+            mailList = client.Inbox;
+            //if (listBoxMail.Items.Count == mailList.Count) { // ????
+            //    return;
+            //}
+            mailList.Open(FolderAccess.ReadOnly);
+            LoadMessages(ref mailList);
+
+
         }
 
-        private void LoadMessages() { // FIX THIS: (оптимизировать повторную загрузку сообщений(сохранять их в массиве))
-            for (int i = 0; i < mailList.Count; i++) {
-                var message = mailList.GetMessage(i);
+        private void LoadMessages(ref IMailFolder folder) { // FIX THIS: (оптимизировать повторную загрузку сообщений(сохранять их в массиве))
+            listBoxMail.Items.Clear();
+            for (int i = 0; i < folder.Count; i++) {
+                var message = folder.GetMessage(i);
                 listBoxMail.Items.Add(message.Subject);
             }
         }
-
-
-        
     }
 }
