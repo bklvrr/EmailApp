@@ -23,6 +23,7 @@
         /// содержимое этого метода с помощью редактора кода.
         /// </summary>
         private void InitializeComponent() {
+            this.components = new System.ComponentModel.Container();
             this.tableLayoutPanelMain = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanelSendRecieve = new System.Windows.Forms.TableLayoutPanel();
             this.richTextBoxMail = new System.Windows.Forms.RichTextBox();
@@ -36,19 +37,27 @@
             this.tableLayoutUsername = new System.Windows.Forms.TableLayoutPanel();
             this.labelUsername = new System.Windows.Forms.Label();
             this.textBoxUsername = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
+            this.menuStripFolders = new System.Windows.Forms.MenuStrip();
+            this.toolStripMenuItemFolders = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItemInbox = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItemFlagged = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItemDraft = new System.Windows.Forms.ToolStripMenuItem();
             this.tableLayoutPanelButtons = new System.Windows.Forms.TableLayoutPanel();
             this.buttonWrite = new System.Windows.Forms.Button();
             this.buttonDelete = new System.Windows.Forms.Button();
             this.buttonSend = new System.Windows.Forms.Button();
             this.buttonBack = new System.Windows.Forms.Button();
             this.buttonRefresh = new System.Windows.Forms.Button();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.tableLayoutPanelMain.SuspendLayout();
             this.tableLayoutPanelSendRecieve.SuspendLayout();
             this.tableLayoutPanelForSubject.SuspendLayout();
             this.tableLayoutPanelMailList.SuspendLayout();
             this.tableLayoutUsername.SuspendLayout();
+            this.menuStripFolders.SuspendLayout();
             this.tableLayoutPanelButtons.SuspendLayout();
+            this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // tableLayoutPanelMain
@@ -168,8 +177,8 @@
             this.tableLayoutPanelMailList.Location = new System.Drawing.Point(3, 3);
             this.tableLayoutPanelMailList.Name = "tableLayoutPanelMailList";
             this.tableLayoutPanelMailList.RowCount = 2;
-            this.tableLayoutPanelMailList.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 15.42751F));
-            this.tableLayoutPanelMailList.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 84.57249F));
+            this.tableLayoutPanelMailList.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 18.21561F));
+            this.tableLayoutPanelMailList.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 81.78439F));
             this.tableLayoutPanelMailList.Size = new System.Drawing.Size(235, 538);
             this.tableLayoutPanelMailList.TabIndex = 2;
             // 
@@ -179,9 +188,9 @@
             this.listBoxMail.Font = new System.Drawing.Font("Courier New", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.listBoxMail.FormattingEnabled = true;
             this.listBoxMail.ItemHeight = 20;
-            this.listBoxMail.Location = new System.Drawing.Point(3, 86);
+            this.listBoxMail.Location = new System.Drawing.Point(3, 100);
             this.listBoxMail.Name = "listBoxMail";
-            this.listBoxMail.Size = new System.Drawing.Size(229, 449);
+            this.listBoxMail.Size = new System.Drawing.Size(229, 435);
             this.listBoxMail.TabIndex = 1;
             this.listBoxMail.SelectedIndexChanged += new System.EventHandler(this.listBoxMail_SelectedIndexChanged);
             // 
@@ -192,15 +201,15 @@
             this.tableLayoutUsername.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutUsername.Controls.Add(this.labelUsername, 0, 0);
             this.tableLayoutUsername.Controls.Add(this.textBoxUsername, 0, 1);
-            this.tableLayoutUsername.Controls.Add(this.label1, 0, 2);
+            this.tableLayoutUsername.Controls.Add(this.menuStripFolders, 0, 2);
             this.tableLayoutUsername.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutUsername.Location = new System.Drawing.Point(3, 3);
             this.tableLayoutUsername.Name = "tableLayoutUsername";
             this.tableLayoutUsername.RowCount = 3;
             this.tableLayoutUsername.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutUsername.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutUsername.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutUsername.Size = new System.Drawing.Size(229, 77);
+            this.tableLayoutUsername.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
+            this.tableLayoutUsername.Size = new System.Drawing.Size(229, 91);
             this.tableLayoutUsername.TabIndex = 2;
             // 
             // labelUsername
@@ -224,17 +233,52 @@
             this.textBoxUsername.Size = new System.Drawing.Size(223, 22);
             this.textBoxUsername.TabIndex = 1;
             // 
-            // label1
+            // menuStripFolders
             // 
-            this.label1.AutoSize = true;
-            this.label1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label1.Location = new System.Drawing.Point(3, 56);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(223, 21);
-            this.label1.TabIndex = 2;
-            this.label1.Text = "Список писем \r\n";
-            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.menuStripFolders.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.menuStripFolders.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.menuStripFolders.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuItemFolders});
+            this.menuStripFolders.Location = new System.Drawing.Point(0, 56);
+            this.menuStripFolders.Name = "menuStripFolders";
+            this.menuStripFolders.Size = new System.Drawing.Size(229, 35);
+            this.menuStripFolders.TabIndex = 2;
+            this.menuStripFolders.Text = "Папки с письмами";
+            // 
+            // toolStripMenuItemFolders
+            // 
+            this.toolStripMenuItemFolders.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuItemInbox,
+            this.toolStripMenuItemFlagged,
+            this.toolStripMenuItemDraft});
+            this.toolStripMenuItemFolders.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.toolStripMenuItemFolders.Name = "toolStripMenuItemFolders";
+            this.toolStripMenuItemFolders.Size = new System.Drawing.Size(67, 31);
+            this.toolStripMenuItemFolders.Text = "Папки";
+            // 
+            // toolStripMenuItemInbox
+            // 
+            this.toolStripMenuItemInbox.BackColor = System.Drawing.SystemColors.MenuHighlight;
+            this.toolStripMenuItemInbox.MergeAction = System.Windows.Forms.MergeAction.Replace;
+            this.toolStripMenuItemInbox.Name = "toolStripMenuItemInbox";
+            this.toolStripMenuItemInbox.Size = new System.Drawing.Size(181, 26);
+            this.toolStripMenuItemInbox.Text = "Входящие";
+            this.toolStripMenuItemInbox.Click += new System.EventHandler(this.toolStripMenuItemInbox_Click);
+            // 
+            // toolStripMenuItemFlagged
+            // 
+            this.toolStripMenuItemFlagged.Name = "toolStripMenuItemFlagged";
+            this.toolStripMenuItemFlagged.Size = new System.Drawing.Size(181, 26);
+            this.toolStripMenuItemFlagged.Text = "Отмеченные";
+            this.toolStripMenuItemFlagged.Click += new System.EventHandler(this.toolStripMenuItemFlagged_Click);
+            // 
+            // toolStripMenuItemDraft
+            // 
+            this.toolStripMenuItemDraft.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.toolStripMenuItemDraft.Name = "toolStripMenuItemDraft";
+            this.toolStripMenuItemDraft.Size = new System.Drawing.Size(181, 26);
+            this.toolStripMenuItemDraft.Text = "Черновики";
+            this.toolStripMenuItemDraft.Click += new System.EventHandler(this.toolStripMenuItemDraft_Click);
             // 
             // tableLayoutPanelButtons
             // 
@@ -312,6 +356,20 @@
             this.buttonRefresh.UseVisualStyleBackColor = true;
             this.buttonRefresh.Click += new System.EventHandler(this.buttonRefresh_Click);
             // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuItem1});
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(239, 28);
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(238, 24);
+            this.toolStripMenuItem1.Text = "Добавить в избранное";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -328,7 +386,10 @@
             this.tableLayoutPanelMailList.ResumeLayout(false);
             this.tableLayoutUsername.ResumeLayout(false);
             this.tableLayoutUsername.PerformLayout();
+            this.menuStripFolders.ResumeLayout(false);
+            this.menuStripFolders.PerformLayout();
             this.tableLayoutPanelButtons.ResumeLayout(false);
+            this.contextMenuStrip1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -354,7 +415,13 @@
         private System.Windows.Forms.Button buttonSend;
         private System.Windows.Forms.Button buttonBack;
         private System.Windows.Forms.Button buttonRefresh;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.MenuStrip menuStripFolders;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemFolders;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemInbox;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemFlagged;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemDraft;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
     }
 }
 
