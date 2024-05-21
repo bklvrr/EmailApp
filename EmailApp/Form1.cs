@@ -14,12 +14,15 @@ using System.Threading;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Drawing;
+using System.CodeDom;
 
 namespace EmailApp {
     public partial class Form1 : Form {
 
-        string userEmail = "test1mailkit@gmail.com";
-        string userPassword = "jgws ddxe piif zmqk";  // use google account setting to generate it
+        //string userEmail = "test1mailkit@gmail.com";
+        string userEmail;
+        //string userPassword = "jgws ddxe piif zmqk";  // use google account setting to generate it
+        string userPassword;
         ImapClient client;
 
         //static string[] CommonSentFolderNames = { "Sent Items", "Sent Mail", "Sent Messages", /* maybe add some translated names */ };
@@ -34,7 +37,6 @@ namespace EmailApp {
         string emailSubject;
 
 
-
         IMailFolder inboxMailFolder;
         IMailFolder flaggedMailFolder;
         IMailFolder draftMailFolder;
@@ -43,18 +45,34 @@ namespace EmailApp {
         string MailText = "";
 
         public Form1() {
-            InitializeComponent();
 
+            bool resultCancel = false;
+
+            client = new ImapClient();
+            client.Connect("imap.gmail.com", 993, true);
+            //DialogResult result = EnterNicknamePassword();
+            while (!AuthenticationCheck(ref client)) {
+                if (EnterNicknamePassword() == DialogResult.Cancel) {
+                    resultCancel = true;
+                    break;
+                }
+            }
+
+            if (resultCancel == true) {
+                this.Close();
+                Application.Exit();
+            }
+
+            InitializeComponent();
             textBoxUsername.Text = userEmail;
             textBoxFor.Enabled = false;
             textBoxSubject.Enabled = false;
 
-            listBoxMail.ContextMenuStrip = contextMenuStrip1;
+            //listBoxMail.ContextMenuStrip = contextMenuStrip1;
 
-            client = new ImapClient();
             try {
-                client.Connect("imap.gmail.com", 993, true);
-                client.Authenticate(userEmail, userPassword);
+                //client.Connect("imap.gmail.com", 993, true);
+                //client.Authenticate(userEmail, userPassword);
 
                 // The Inbox folder is always available on all IMAP servers...
 
@@ -114,24 +132,31 @@ namespace EmailApp {
             finally {
                 //client.Disconnect(true);
             }
-
         }
 
         private void listBoxMail_SelectedIndexChanged(object sender, EventArgs e) { //FIX ME: Убрать цикл окончательно, посмотреть правильно ли работает без него
             int index = listBoxMail.SelectedIndex;
             //for (int i = inboxMailFolder.Count - 1; i >= 0; i--) {
-                //if (i == index) {
-                    if (toolStripMenuItemInbox.BackColor == Color.DeepSkyBlue) {
-                        richTextBoxMail.Text = inboxMailFolder.GetMessage(index).TextBody;
-                    }
-                    if (toolStripMenuItemFlagged.BackColor == Color.DeepSkyBlue) {
-                        richTextBoxMail.Text = flaggedMailFolder.GetMessage(index).TextBody;
-                    }
+            //if (i == index) {
+            if (toolStripMenuItemInbox.BackColor == Color.DeepSkyBlue) {
+                int len = (inboxMailFolder.GetMessage(index).Subject).Length;
 
-                    if (toolStripMenuItemDraft.BackColor == Color.DeepSkyBlue) {
-                        richTextBoxMail.Text = draftMailFolder.GetMessage(index).TextBody;
-                    }
-                //}
+                richTextBoxMail.Text = "< " + inboxMailFolder.GetMessage(index).Subject + " >" + "\n" + inboxMailFolder.GetMessage(index).Date+ "\n\n" + inboxMailFolder.GetMessage(index).TextBody;
+                //richTextBoxMail.Select(1,len);
+                //richTextBoxMail.SelectedText += richTextBoxMail.SelectionFont.Bold;
+            }
+            if (toolStripMenuItemFlagged.BackColor == Color.DeepSkyBlue) {
+                richTextBoxMail.Text = "< " + flaggedMailFolder.GetMessage(index).Subject + " >" + "\n" + flaggedMailFolder.GetMessage(index).Date + "\n\n" + flaggedMailFolder.GetMessage(index).TextBody;
+            }
+
+            if (toolStripMenuItemDraft.BackColor == Color.DeepSkyBlue) {
+                if(draftMailFolder.GetMessage(index).Subject == string.Empty) {
+                    richTextBoxMail.Text = "< Без темы >" + "\n" + draftMailFolder.GetMessage(index).Date + "\n\n" + draftMailFolder.GetMessage(index).TextBody;
+                } else {
+                    richTextBoxMail.Text = "< " + draftMailFolder.GetMessage(index).Subject + " >" + "\n" + draftMailFolder.GetMessage(index).Date + "\n\n" + draftMailFolder.GetMessage(index).TextBody;
+                }
+            }
+            //}
             //}
         }
 
@@ -151,7 +176,7 @@ namespace EmailApp {
         }
 
         private void SendingEmailCheck() { // TODO: Сделать проверку на наличие @yandex.com | @gmail.com |
-            
+
         }
 
         private void buttonSend_Click(object sender, EventArgs e) {
@@ -159,7 +184,7 @@ namespace EmailApp {
             if (toolStripMenuItemDraft.BackColor == Color.DeepSkyBlue) {
                 message = draftMailFolder.GetMessage(listBoxMail.SelectedIndex);
             } else {
-                
+
                 message.From.Add(new MailboxAddress(userEmail, userEmail));
                 message.To.Add(new MailboxAddress(textBoxFor.Text, textBoxFor.Text));
                 message.Subject = textBoxSubject.Text;
@@ -168,48 +193,48 @@ namespace EmailApp {
                     Text = richTextBoxMail.Text
                 };
             }
-           
-                if (textBoxFor.Text != string.Empty && textBoxFor.Text.Contains("@") && (textBoxFor.Text.Contains(".com") || textBoxFor.Text.Contains(".ru"))) {
-                    using (var clientSMTP = new MailKit.Net.Smtp.SmtpClient()) {
-                        try {
-                            clientSMTP.Connect("smtp.gmail.com", 465, true);
 
-                            // Note: only needed if the SMTP server requires authentication
-                            clientSMTP.Authenticate(userEmail, userPassword);
-                            clientSMTP.Send(message);
+            if (textBoxFor.Text != string.Empty && textBoxFor.Text.Contains("@") && (textBoxFor.Text.Contains(".com") || textBoxFor.Text.Contains(".ru"))) {
+                using (var clientSMTP = new MailKit.Net.Smtp.SmtpClient()) {
+                    try {
+                        clientSMTP.Connect("smtp.gmail.com", 465, true);
 
-                            Console.WriteLine("email SENT");
+                        // Note: only needed if the SMTP server requires authentication
+                        clientSMTP.Authenticate(userEmail, userPassword);
+                        clientSMTP.Send(message);
 
-                            clientSMTP.Disconnect(true);
-                        }
-                        catch (Exception ex) {
-                            Console.WriteLine(ex.Message);
-                        }
-                        finally {
-                            clientSMTP?.Dispose();
-                            MailText = "";
-                            buttonBack.Enabled = false;
-                            buttonWrite.Enabled = true;
-                            buttonSend.Enabled = false;
-                            textBoxFor.Text = "";
-                            textBoxFor.Enabled = false;
-                            textBoxSubject.Text = "";
-                            textBoxSubject.Enabled = false;
-                            buttonDelete.Enabled = true;
-                            richTextBoxMail.Text = "";
-                            richTextBoxMail.ReadOnly = true;
-                            listBoxMail.Enabled = true;
-                            buttonRefresh.Enabled = true;
-                        }
+                        Console.WriteLine("email SENT");
+
+                        clientSMTP.Disconnect(true);
                     }
-                } else {
-                    MessageBox.Show("Уточните адрес почты",
-                                    "Сообщение",
-                                     MessageBoxButtons.OK,
-                                     MessageBoxIcon.Information,
-                                     MessageBoxDefaultButton.Button1,
-                                     MessageBoxOptions.DefaultDesktopOnly);
+                    catch (Exception ex) {
+                        Console.WriteLine(ex.Message);
+                    }
+                    finally {
+                        clientSMTP?.Dispose();
+                        MailText = "";
+                        buttonBack.Enabled = false;
+                        buttonWrite.Enabled = true;
+                        buttonSend.Enabled = false;
+                        textBoxFor.Text = "";
+                        textBoxFor.Enabled = false;
+                        textBoxSubject.Text = "";
+                        textBoxSubject.Enabled = false;
+                        buttonDelete.Enabled = true;
+                        richTextBoxMail.Text = "";
+                        richTextBoxMail.ReadOnly = true;
+                        listBoxMail.Enabled = true;
+                        buttonRefresh.Enabled = true;
+                    }
                 }
+            } else {
+                MessageBox.Show("Уточните адрес почты",
+                                "Сообщение",
+                                 MessageBoxButtons.OK,
+                                 MessageBoxIcon.Information,
+                                 MessageBoxDefaultButton.Button1,
+                                 MessageBoxOptions.DefaultDesktopOnly);
+            }
         }
 
         private void buttonDelete_Click(object sender, EventArgs e) { // TODO: Сделать удаление писем с вызовом MassageBox
@@ -234,7 +259,7 @@ namespace EmailApp {
                 draftMailFolder.Expunge();
                 LoadMessages(ref draftMailFolder);
             }
-           
+
         }
 
         private void textBoxFor_TextChanged(object sender, EventArgs e) {
@@ -265,7 +290,7 @@ namespace EmailApp {
                     draftMailFolder.Append(message, MessageFlags.Draft);
                     Console.WriteLine("Hello world222");
                 }
-            
+
                 MailText = "";
                 buttonBack.Enabled = false;
                 buttonWrite.Enabled = true;
@@ -327,12 +352,12 @@ namespace EmailApp {
 
                 //Console.WriteLine(folder.Name + ": " + message.Subject);
                 // ВАЖНО
-                if(message.Subject == string.Empty) {
+                if (message.Subject == string.Empty) {
                     listBoxMail.Items.Add("< Без темы >");
                 } else {
                     listBoxMail.Items.Add(message.Subject);
                 }
-                
+
                 //Console.WriteLine(flag);
 
                 /*if(flag =MessageFlags.Seen) { // FIX ME: почему-то макрек ставится на все письма сразу(допили уже эту фичу)
@@ -382,13 +407,79 @@ namespace EmailApp {
             }
         }
 
-        /*                                                                  
-        private void toolStripMenuItem1_Click(object sender, EventArgs e) {     // FIX ME: доделать функцию добавления в избранное
-            if (toolStripMenuItemInbox.BackColor == Color.DeepSkyBlue && inboxMailFolder. == MessageFlags.Flagged) {
+        private DialogResult EnterNicknamePassword() {
+
+            Form nicknamePasswordDialog = new Form();
+            System.Windows.Forms.Label nicknamePasswordLabelName = new System.Windows.Forms.Label();
+            System.Windows.Forms.Label nicknamePasswordLabelPassword = new System.Windows.Forms.Label();
+            System.Windows.Forms.TextBox nicknamePasswordTextBoxName = new System.Windows.Forms.TextBox();
+            System.Windows.Forms.TextBox nicknamePasswordTextBoxPassword = new System.Windows.Forms.TextBox();
+            System.Windows.Forms.Button nicknamePasswordButtonOk = new System.Windows.Forms.Button();
+            System.Windows.Forms.Button nicknamePasswordButtonCancel = new System.Windows.Forms.Button();
+
+            nicknamePasswordDialog.Text = "Информация";
+            nicknamePasswordLabelName.Text = "Введите вашу почту!";
+            nicknamePasswordLabelPassword.Text = "Введите ваш пароль(сгенерировнный в гугл почте)!";
+
+            nicknamePasswordButtonOk.Text = "OK";
+            nicknamePasswordButtonCancel.Text = "Cancel";
+            nicknamePasswordButtonOk.DialogResult = DialogResult.OK;
+            nicknamePasswordButtonCancel.DialogResult = DialogResult.Cancel;
+
+            nicknamePasswordLabelName.SetBounds(36, 46, 372, 13);
+            nicknamePasswordTextBoxName.SetBounds(36, 66, 700, 20);
+
+            nicknamePasswordLabelPassword.SetBounds(36, 120, 372, 13);
+            nicknamePasswordTextBoxPassword.SetBounds(36, 145, 700, 20);
+
+            nicknamePasswordButtonOk.SetBounds(228, 200, 160, 60);
+            nicknamePasswordButtonCancel.SetBounds(400, 200, 160, 60);
+
+            nicknamePasswordLabelName.AutoSize = true;
+            nicknamePasswordLabelPassword.AutoSize = true;
+            nicknamePasswordDialog.ClientSize = new Size(796, 307);
+            nicknamePasswordDialog.FormBorderStyle = FormBorderStyle.FixedDialog;
+            nicknamePasswordDialog.StartPosition = FormStartPosition.CenterScreen;
+            nicknamePasswordDialog.MinimizeBox = false;
+            nicknamePasswordDialog.MaximizeBox = false;
+
+            nicknamePasswordDialog.Controls.AddRange(new Control[] { nicknamePasswordLabelName, nicknamePasswordTextBoxName, nicknamePasswordLabelPassword, nicknamePasswordTextBoxPassword, nicknamePasswordButtonOk, nicknamePasswordButtonCancel });
+            nicknamePasswordDialog.AcceptButton = nicknamePasswordButtonOk;
+            nicknamePasswordDialog.CancelButton = nicknamePasswordButtonCancel;
+
+            DialogResult nicknamePasswordDialogResult = nicknamePasswordDialog.ShowDialog();
+            userEmail = nicknamePasswordTextBoxName.Text;
+            userPassword = nicknamePasswordTextBoxPassword.Text;
+            return nicknamePasswordDialogResult;
+        }
+
+        private bool AuthenticationCheck(ref ImapClient imap_client) {
+            try {
+                if (imap_client.IsConnected == false){
+                    client.Connect("imap.gmail.com", 993, true);
+                }
+                client.Authenticate(userEmail, userPassword);
+            }
+            catch (Exception ex) {
+                Console.WriteLine(ex.Message);
+            }
+            Console.WriteLine("IsAuthenticated: " + imap_client.IsAuthenticated);
+            return imap_client.IsAuthenticated;
+        }
+
+
+        /*private void toolStripMenuItemMenu_Click(object sender, EventArgs e) {     // FIX ME: доделать функцию добавления в избранное
+            
+            //IMessageSummary summary = inboxMailFolder.Fetch(index ,index, MailKit.MessageSummaryItems.Flags) ;
+            if (toolStripMenuItemInbox.BackColor == Color.DeepSkyBlue) {
+                int index = listBoxMail.SelectedIndex;
+                MimeMessage message = inboxMailFolder.GetMessage(index);
+                inboxMailFolder.AddFlags(index, MessageFlags.Flagged, true);
                 flaggedMailFolder.Open(FolderAccess.ReadWrite);
                 flaggedMailFolder.Store(listBoxMail.SelectedIndex, new StoreFlagsRequest(StoreAction.Add, MessageFlags.Flagged) { Silent = true });
                 flaggedMailFolder.Expunge();
-                //LoadMessages(ref flaggedMailFolder);
+                LoadMessages(ref flaggedMailFolder);
+                Console.WriteLine("Hello World33333");
             }
 
             if (toolStripMenuItemFlagged.BackColor == Color.DeepSkyBlue) {

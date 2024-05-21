@@ -49,7 +49,7 @@
             this.buttonBack = new System.Windows.Forms.Button();
             this.buttonRefresh = new System.Windows.Forms.Button();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItemContextMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.tableLayoutPanelMain.SuspendLayout();
             this.tableLayoutPanelSendRecieve.SuspendLayout();
             this.tableLayoutPanelForSubject.SuspendLayout();
@@ -81,16 +81,16 @@
             // tableLayoutPanelSendRecieve
             // 
             this.tableLayoutPanelSendRecieve.ColumnCount = 1;
-            this.tableLayoutPanelSendRecieve.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanelSendRecieve.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanelSendRecieve.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 74.95327F));
+            this.tableLayoutPanelSendRecieve.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25.04673F));
             this.tableLayoutPanelSendRecieve.Controls.Add(this.richTextBoxMail, 0, 1);
             this.tableLayoutPanelSendRecieve.Controls.Add(this.tableLayoutPanelForSubject, 0, 0);
             this.tableLayoutPanelSendRecieve.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanelSendRecieve.Location = new System.Drawing.Point(244, 3);
             this.tableLayoutPanelSendRecieve.Name = "tableLayoutPanelSendRecieve";
             this.tableLayoutPanelSendRecieve.RowCount = 2;
-            this.tableLayoutPanelSendRecieve.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 15.14196F));
-            this.tableLayoutPanelSendRecieve.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 84.85805F));
+            this.tableLayoutPanelSendRecieve.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 13.01115F));
+            this.tableLayoutPanelSendRecieve.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 86.98885F));
             this.tableLayoutPanelSendRecieve.Size = new System.Drawing.Size(535, 538);
             this.tableLayoutPanelSendRecieve.TabIndex = 1;
             // 
@@ -98,10 +98,10 @@
             // 
             this.richTextBoxMail.BackColor = System.Drawing.SystemColors.Window;
             this.richTextBoxMail.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.richTextBoxMail.Location = new System.Drawing.Point(3, 84);
+            this.richTextBoxMail.Location = new System.Drawing.Point(3, 72);
             this.richTextBoxMail.Name = "richTextBoxMail";
             this.richTextBoxMail.ReadOnly = true;
-            this.richTextBoxMail.Size = new System.Drawing.Size(529, 451);
+            this.richTextBoxMail.Size = new System.Drawing.Size(529, 463);
             this.richTextBoxMail.TabIndex = 0;
             this.richTextBoxMail.Text = "";
             // 
@@ -115,7 +115,7 @@
             this.tableLayoutPanelForSubject.Controls.Add(this.textBoxSubject, 1, 1);
             this.tableLayoutPanelForSubject.Controls.Add(this.labelFor, 0, 0);
             this.tableLayoutPanelForSubject.Controls.Add(this.labelSubject, 0, 1);
-            this.tableLayoutPanelForSubject.Location = new System.Drawing.Point(3, 16);
+            this.tableLayoutPanelForSubject.Location = new System.Drawing.Point(3, 10);
             this.tableLayoutPanelForSubject.Name = "tableLayoutPanelForSubject";
             this.tableLayoutPanelForSubject.RowCount = 2;
             this.tableLayoutPanelForSubject.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
@@ -347,7 +347,7 @@
             // 
             // buttonRefresh
             // 
-            this.buttonRefresh.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.buttonRefresh.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonRefresh.Location = new System.Drawing.Point(3, 547);
             this.buttonRefresh.Name = "buttonRefresh";
             this.buttonRefresh.Size = new System.Drawing.Size(235, 103);
@@ -360,15 +360,15 @@
             // 
             this.contextMenuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripMenuItem1});
+            this.toolStripMenuItemContextMenu});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
             this.contextMenuStrip1.Size = new System.Drawing.Size(239, 28);
             // 
-            // toolStripMenuItem1
+            // toolStripMenuItemContextMenu
             // 
-            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(238, 24);
-            this.toolStripMenuItem1.Text = "Добавить в избранное";
+            this.toolStripMenuItemContextMenu.Name = "toolStripMenuItemContextMenu";
+            this.toolStripMenuItemContextMenu.Size = new System.Drawing.Size(238, 24);
+            this.toolStripMenuItemContextMenu.Text = "Добавить в избранное";
             // 
             // Form1
             // 
@@ -421,7 +421,7 @@
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemFlagged;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemDraft;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemContextMenu;
     }
 }
 
