@@ -15,19 +15,24 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Drawing;
 using System.CodeDom;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace EmailApp {
     public partial class Form1 : Form {
 
         //string userEmail = "test1mailkit@gmail.com";
-        string userEmail;
+        private string userEmail;
         //string userPassword = "jgws ddxe piif zmqk";  // use google account setting to generate it
-        string userPassword;
-        ImapClient client;
+        private string userPassword;
+        private ImapClient client;
 
+
+        //List<MimeEntity> attachments; //нужно дял вложений
+        
+        
         //static string[] CommonSentFolderNames = { "Sent Items", "Sent Mail", "Sent Messages", /* maybe add some translated names */ };
-        static string[] CommonFlaggedFolderNames = { "Flagged Items", "Flagged Mail", "Flagged Messages" };
-        static string[] CommonDraftedFolderNames = { "Draft Items", "Draft Mail", "Draft Messages" };
+        //static string[] CommonFlaggedFolderNames = { "Flagged Items", "Flagged Mail", "Flagged Messages" };
+        //static string[] CommonDraftedFolderNames = { "Draft Items", "Draft Mail", "Draft Messages" };
 
         List<string> InboxList = new List<string>();
         List<string> FlaggedList = new List<string>();
@@ -37,9 +42,9 @@ namespace EmailApp {
         string emailSubject;
 
 
-        IMailFolder inboxMailFolder;
-        IMailFolder flaggedMailFolder;
-        IMailFolder draftMailFolder;
+        private IMailFolder inboxMailFolder;
+        private IMailFolder flaggedMailFolder;
+        private IMailFolder draftMailFolder;
         //IMailFolder junkMailFolder;
 
         string MailText = "";
@@ -141,7 +146,13 @@ namespace EmailApp {
             if (toolStripMenuItemInbox.BackColor == Color.DeepSkyBlue) {
                 int len = (inboxMailFolder.GetMessage(index).Subject).Length;
 
+                //IEnumerable<MimeEntity> attachments =  inboxMailFolder.GetMessage(index).Attachments;
+                //foreach (MimeEntity attachment in attachments) {
+                    
+                //}
                 richTextBoxMail.Text = "< " + inboxMailFolder.GetMessage(index).Subject + " >" + "\n" + inboxMailFolder.GetMessage(index).Date+ "\n\n" + inboxMailFolder.GetMessage(index).TextBody;
+                
+                
                 //richTextBoxMail.Select(1,len);
                 //richTextBoxMail.SelectedText += richTextBoxMail.SelectionFont.Bold;
             }
@@ -161,18 +172,26 @@ namespace EmailApp {
         }
 
         private void buttonWrite_Click(object sender, EventArgs e) {
+
+            if (toolStripMenuItemDraft.BackColor == Color.DeepSkyBlue) {
+                
+            } else {
+                richTextBoxMail.Text = "Здесь можно написать текст...";
+            }
+
             richTextBoxMail.ReadOnly = false;
             textBoxFor.Enabled = true;
             textBoxSubject.Enabled = true;
             listBoxMail.Enabled = false;
-            richTextBoxMail.Text = "Здесь можно написать текст...";
+            
             buttonWrite.Enabled = false;
             buttonSend.Enabled = true;
             buttonBack.Enabled = true;
             buttonDelete.Enabled = false;
             buttonRefresh.Enabled = false;
+            toolStripMenuItemFolders.Enabled = false;
 
-            MailText = "";
+            //MailText = "";
         }
 
         private void SendingEmailCheck() { // TODO: Сделать проверку на наличие @yandex.com | @gmail.com |
@@ -182,17 +201,29 @@ namespace EmailApp {
         private void buttonSend_Click(object sender, EventArgs e) {
             var message = new MimeMessage();
             if (toolStripMenuItemDraft.BackColor == Color.DeepSkyBlue) {
-                message = draftMailFolder.GetMessage(listBoxMail.SelectedIndex);
+                //message = draftMailFolder.GetMessage(listBoxMail.SelectedIndex);
             } else {
 
                 message.From.Add(new MailboxAddress(userEmail, userEmail));
                 message.To.Add(new MailboxAddress(textBoxFor.Text, textBoxFor.Text));
                 message.Subject = textBoxSubject.Text;
 
-                message.Body = new TextPart("plain") {
+                /*message.Body = new TextPart("plain") {
                     Text = richTextBoxMail.Text
                 };
+                */
             }
+
+            var builder = new BodyBuilder();
+
+            builder.TextBody = richTextBoxMail.Text;
+
+
+            //builder.Attachments.Add("C:\\Users\\oshur\\Desktop\\DSTE78rVAAAbAaM.jpg");
+            
+            
+            message.Body = builder.ToMessageBody();
+
 
             if (textBoxFor.Text != string.Empty && textBoxFor.Text.Contains("@") && (textBoxFor.Text.Contains(".com") || textBoxFor.Text.Contains(".ru"))) {
                 using (var clientSMTP = new MailKit.Net.Smtp.SmtpClient()) {
@@ -225,6 +256,7 @@ namespace EmailApp {
                         richTextBoxMail.ReadOnly = true;
                         listBoxMail.Enabled = true;
                         buttonRefresh.Enabled = true;
+                        toolStripMenuItemFolders.Enabled = true;
                     }
                 }
             } else {
@@ -244,6 +276,8 @@ namespace EmailApp {
                 inboxMailFolder.Store(listBoxMail.SelectedIndex, new StoreFlagsRequest(StoreAction.Add, MessageFlags.Deleted) { Silent = true });
                 inboxMailFolder.Expunge();
                 LoadMessages(ref inboxMailFolder);
+                richTextBoxMail.Text = "";
+                MessageBox.Show("Письмо удалено!", "Сообщение", MessageBoxButtons.OK);
 
             }
             if (toolStripMenuItemFlagged.BackColor == Color.DeepSkyBlue) {
@@ -251,6 +285,8 @@ namespace EmailApp {
                 flaggedMailFolder.Store(listBoxMail.SelectedIndex, new StoreFlagsRequest(StoreAction.Add, MessageFlags.Deleted) { Silent = true });
                 flaggedMailFolder.Expunge();
                 LoadMessages(ref flaggedMailFolder);
+                richTextBoxMail.Text = "";
+                MessageBox.Show("Письмо удалено!", "Сообщение", MessageBoxButtons.OK);
             }
 
             if (toolStripMenuItemDraft.BackColor == Color.DeepSkyBlue) {
@@ -258,6 +294,8 @@ namespace EmailApp {
                 draftMailFolder.Store(listBoxMail.SelectedIndex, new StoreFlagsRequest(StoreAction.Add, MessageFlags.Deleted) { Silent = true });
                 draftMailFolder.Expunge();
                 LoadMessages(ref draftMailFolder);
+                richTextBoxMail.Text = "";
+                MessageBox.Show("Письмо удалено!", "Сообщение", MessageBoxButtons.OK);
             }
 
         }
@@ -304,6 +342,7 @@ namespace EmailApp {
                 richTextBoxMail.ReadOnly = true;
                 listBoxMail.Enabled = true;
                 buttonRefresh.Enabled = true;
+                toolStripMenuItemFolders.Enabled = true;
             }
         }
 
@@ -422,7 +461,7 @@ namespace EmailApp {
             nicknamePasswordLabelPassword.Text = "Введите ваш пароль(сгенерировнный в гугл почте)!";
 
             nicknamePasswordButtonOk.Text = "OK";
-            nicknamePasswordButtonCancel.Text = "Cancel";
+            nicknamePasswordButtonCancel.Text = "Отмена";
             nicknamePasswordButtonOk.DialogResult = DialogResult.OK;
             nicknamePasswordButtonCancel.DialogResult = DialogResult.Cancel;
 
@@ -467,6 +506,16 @@ namespace EmailApp {
             return imap_client.IsAuthenticated;
         }
 
+        /*private void AddAttachment() {        // FIX ME: Допилить вложения к почте
+            if (openFileDialog1.ShowDialog() == DialogResult.Cancel)
+                return;
+            // получаем выбранный файл
+            string filename = openFileDialog1.FileName;
+            // читаем файл в строку
+            string fileText = System.IO.File.ReadAllText(filename);
+            MessageBox.Show("Файл добавлен");
+            attachments.Add(openFileDialog1.);
+        }*/
 
         /*private void toolStripMenuItemMenu_Click(object sender, EventArgs e) {     // FIX ME: доделать функцию добавления в избранное
             
